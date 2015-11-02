@@ -77,10 +77,14 @@
    0x9FC997
    ])
 
+(defn color-pallette
+  [n]
+  (nth colors (mod n (count colors))))
+
 (defn create-piece-mesh
   "Create a mesh for a single piece - takes a piece index and  list of coords "
   [idx parts]
-  (let [color (nth colors idx)
+  (let [color (color-pallette  idx)
         material (js/THREE.MeshPhongMaterial. (clj->js {:color (js/THREE.Color. color)}))
         geometry
         (reduce
@@ -98,21 +102,47 @@
     (println "creating parts " idx ":" parts " " color)
     (js/THREE.Mesh. geometry material)))
 
-(go
-  (let [c (client/fetch-answerset "http://localhost:8081/pieces")
-        resmap (as->
-                 (<! c) $
-                 (filter (fn [t] (= (first t) :part)) $)
-                 (reduce (fn [mv  [_ idv  [ _ & coords]]]
-                           (assoc mv idv
-                                     (conj (get  mv idv []) coords))) {} $))]
-    (doseq [[idx v] resmap]
-      (println "creating " idx v)
-      (let [piece (create-piece-mesh idx v)]
-        (doto piece  (.. -position (set (- (* 450 idx) 1500)  0 0)))
-        (.add scene piece )
-        (reset! pieces (conj @pieces piece))
-        ))))
+
+
+(defn num-rows
+  [total]
+  (int (Math/floor (+ 1 (Math/sqrt total )))))
+
+(defn num-columns
+  [total]
+  (int (Math/ceil (/ total (num-rows total)))))
+
+(defn grid-coords
+  [total idx]
+  [(int (/ total (num-rows total)))
+   (int (mod total (num-columns total)))])
+
+
+(defn display-pieces-from-url
+  [url ]
+  (go
+    (let [c (client/fetch-answerset url)
+          resmap (as->
+                   (<! c) $
+                   (do (println "result" (type $) $) $)
+                   (filter (fn [t] (= (first t) :part)) $)
+                   (reduce (fn [mv  [_ idv  [ _ & coords]]]
+                             (assoc mv idv
+                                       (conj (get  mv idv []) coords))) {} $))]
+      (doseq [[idx v] resmap]
+        (println "creating " idx v)
+        (let [piece (create-piece-mesh idx v)]
+          (doto piece  (.. -position (set (- (* 450 idx) 1500)  0 0)))
+          (.add scene piece )
+          (reset! pieces (conj @pieces piece))
+          )))))
+
+;(display-pieces-from-url "http://localhost:8081/pieces")
+;(display-pieces-from-url "http://localhost:8081/pieces-stage/1?n=100")
+;(display-pieces-from-url "http://localhost:8081/pieces-stage/2?n=100")
+;(display-pieces-from-url "http://localhost:8081/pieces-stage/3?n=100")
+;(display-pieces-from-url "http://localhost:8081/pieces-stage/3?n=100&bs=true")
+(display-pieces-from-url "http://localhost:8081/pieces-stage/4?bs=true")
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
