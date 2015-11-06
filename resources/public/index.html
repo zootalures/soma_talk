@@ -1,18 +1,299 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="css/style.css" rel="stylesheet" type="text/css">
-</head>
-<body>
-<div id="app">
-    <h2>pieces</h2>
+<!doctype html>
+<html lang="en">
 
-    <canvas id="canvas" style="width:1024px "></canvas>
+<head>
+    <meta charset="utf-8">
+
+    <title>Cheating at maths puzzles</title>
+
+    <meta name="description" content="Cheating at maths puzzles with computer science ">
+    <meta name="author" content="Owen Cliffe">
+
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="presentation/css/reveal.css">
+
+    <link rel="stylesheet" href="presentation/css/theme/black.css" id="theme">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="presentation/lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+
+
+    <script src="libjs/three.js" type="text/javascript"></script>
+    <script src="js/compiled/soma_demo.js" type="text/javascript"></script>
+    <script src="presentation/lib/js/highlight.pack.js" type="text/javascript"></script>
+
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <!--[if lt IE 9]>
+    <script src="presentation/lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="reveal">
+    <div class="slides">
+        <section class="stack">
+            <h1>Cheating at MathsJam puzzles</h1>
+
+            <p> like a lazy computer scientist</p>
+            <p> (there will be code) </p>
+            <p>Owen Cliffe, 2015</p>
+        </section>
+
+        <section class="">
+            <h2>Soma Cube</h2>
+            <ul>
+                <li> given pieces consisting of</li>
+                <ul>
+                    <li>all possible combinations of 3-4 cubes</li>
+                    <li>joined at their faces</li>
+                    <li>s.t. at least one corner is formed</li>
+                    <li>excluding rotational symmetries</li>
+                </ul>
+                <li>these fit into a 3x3 cube</li>
+                <li>in 240 distinct ways (excluding symmetries)</li>
+            </ul>
+        </section>
+
+        <section class="">
+            <h2>The pieces</h2>
+            <img class="fragment fade-in" border="0" height="300" src="/images/owen_deathstar.jpg">
+            <img class="fragment fade-in" border="0" height="300" src="/images/typist.jpg">
+        </section>
+        <section>
+            <pre><code class="prolog">
+% 3 axes
+axis(x).  axis(y). axis(z).
+
+% 3 positions
+pos(0). pos(1). pos(2).
+
+% index the location of each part in each axis
+loc(x,p(X,Y,Z),X) ↤ element(p(X,Y,Z)).
+loc(y,p(X,Y,Z),Y) ↤ element(p(X,Y,Z)).
+loc(z,p(X,Y,Z),Z) ↤ element(p(X,Y,Z)).
+            </code> </pre>
+        </section>
+
+        <section>
+            <pre><code class="prolog">
+% generate all combinations of 3 and four blocks in the cube
+3 { element(p(X,Y,Z)) : pos(X), pos(Y), pos(Z)} 4.
+            </code> </pre>
+        </section>
+
+
+        <section >
+            <canvas id="canvas1" style=" height:80%; width:80%" width="1024" height="500"></canvas>
+            <p> 20475 solutions ( 27 choose 3 + 27 choose 4) </p>
+            <script type="text/javascript">
+                soma_demo.core.display_pieces_from_url("canvas1","/cube_data/part-1.edn",15, true,0.6);
+            </script>
+
+        </section>
+
+        <section>
+            <pre><code class="prolog">
+% Two pieces are adjacent if they share the same coordinate in
+% two axes and are one apart in the other
+adjacent(A,P1,P2) ↤
+    loc(A,P1,R), loc(A, P2, R+1), % adjacent axes
+    loc(B,P1,S), loc(B, P2, S),  % same axes
+    loc(C,P1,T), loc(C, P2, T),  % same axes
+    B!=C,A!=B,A!=C,B!=C, element(P1),element(P2).</code></pre>
+        </section>
+
+        <section>
+            <pre><code class="prolog">
+% connected is adjacent
+connected(P1,P2) ↤ adjacent (_,P1, P2).
+
+% connectedness is transitive
+connected(P1,P3) ↤ connected(P1,P2), connected(P2,P3) .
+
+% model is disconnected if any two parts are not conected
+disconnected ↤ not connected(P1, P2), element(P1), element(P2).
+
+% exclude solutions which are disconnected
+⊥↤ disconnected.
+           </code> </pre>
+        </section>
+        <section class="stretch">
+            <canvas id="canvas3" style=" height:100%; width:100%" width="1024" height="500"></canvas>
+            <script type="text/javascript">
+                soma_demo.core.display_pieces_from_url("canvas3","/cube_data/part-3.edn");
+            </script>
+
+        </section>
+
+        <section>
+            <h2> Ignore rotational symmetries</h2>
+        </section>
+
+
+        <section class="stretch">
+            <canvas id="canvas-sym" style=" height:100%; width:100%" width="1024" height="500"></canvas>
+            <script type="text/javascript">
+                soma_demo.core.display_pieces_from_url("canvas-sym","http://localhost:8081/showrotations?n=3",
+                        6, false, 0.8);
+            </script>
+        </section>
+
+        <section class="stretch">
+            <canvas id="canvas4" style=" height:100%; width:100%" width="1024" height="500"></canvas>
+            <script type="text/javascript">
+                soma_demo.core.display_pieces_from_url("canvas4","/cube_data/part-3-bs.edn", 3 , true , 1.2);
+            </script>
+        </section>
+
+
+
+        <section>
+            <pre>
+                <code class="prolog">
+% a corner  consists of three adjacent pieces, adjacent in two distinct axes.
+corner(P2,A3) ↤
+ adjacent(A1,P1,P2), adjacent(A2,P2,P3),
+ axis(A3), A1!=A2, A2!=A3,
+ P1!=P3 , A1!=A2,A1!=A3.
+
+% a piece has inflections if it has at least one corner
+at_least_one_corner ↤ corner(P2,A3).
+
+% Exclude models without any corners
+⊥ ↤ not at_least_one_corner.
+            </code></pre>
+        </section>
+        <section class="stretch">
+            <canvas id="canvas5" style=" height:100%; width:100%" width="1024" height="500"></canvas>
+            <script type="text/javascript">
+                soma_demo.core.display_pieces_from_url("canvas5","/cube_data/part-4-bs.edn");
+            </script>
+        </section>
+
+        <section>
+            <pre>
+                <code class="prolog">
+% corners are opposite if they share two adjacent pieces
+oppositecorners(P1,P2,A) ↤ corner(P1,A), corner(P2,A),
+                          adjacent(_,P1,P3), adjacent(_,P2,P3), P1!=P3,P1!=P2.
+
+% opposite corners are not infjections
+at_least_one_corner :- corner(P2,A3), not oppositecorners(P1,_,A3),element(P1).
+⊥ ↤ not at_least_one_corner.
+
+</code></pre>
+        </section>
+        <section class="stretch">
+            <canvas id="pieces-canvas" style=" height:100%; width:100%" width="1024" height="500"></canvas>
+            <script type="text/javascript">
+                soma_demo.core.display_pieces_from_url("pieces-canvas","http://localhost:8081/pieces-stage/5?bs=true", 7 ,true);
+            </script>
+        </section>
+
+        <section>
+                <h2> Solving the cube</h2>
+        </section>
+
+        <section>
+             <pre>
+<code class="prolog fragment fade-in">
+% pick exactly one rotation and translation for each piece
+1{tranform_element(P,R,T) : poss_location(P,R,T,_) }1 ↤ piece(P) .
+</code >
+<code class="prolog fragment fade-in">
+% place each element of each piece according to its translation and rotation
+element(P,L)↤ tranform_element(P,R,T),poss_location(P,R,T,L).
+</code>
+<code class="prolog fragment fade-in">
+% two elements cannot occupy the same coordinate
+⊥ ↤ element(P1,L),element(P2,L),P1!=P2.
+</code>
+<code class="prolog fragment fade-in">
+% each element in the cube  must be occupied
+occupied(L) ↤ element(P,L).
+⊥ ↤ not occupied(L), loc(L).
+                </code></pre>
+        </section>
+        <section class="stretch">
+            <canvas id="solutions" style=" height:100%; width:100%" width="1024" height="500"></canvas>
+            <script type="text/javascript">
+                soma_demo.core.display_sln_from_url("solutions","http://localhost:8081/puzzle-solution?n=1",1,  0.5);
+            </script>
+            <p> </p>
+        </section>
+
+        <section class="stretch">
+            <canvas id="allsolutions" style=" height:100%; width:100%" width="1024" height="500"></canvas>
+            <script type="text/javascript">
+                soma_demo.core.display_sln_from_url("allsolutions","http://localhost:8081/puzzle-solution?n=240", 24 , 0.5);
+            </script>
+
+        </section>
+    </div>
 </div>
-<script src="libjs/three.js" type="text/javascript"></script>
-<script src="js/compiled/soma_demo.js" type="text/javascript"></script>
+
+<script src="presentation/lib/js/head.min.js"></script>
+<script src="presentation/js/reveal.js"></script>
+
+<script>
+
+    // Full list of configuration options available at:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        width: '99%',
+        height: '99%',
+        transition: 'zoom', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+            {
+                src: 'lib/js/classList.js', condition: function () {
+                return !document.body.classList;
+            }
+            },
+            {
+                src: 'plugin/markdown/marked.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            }
+            },
+            {
+                src: 'plugin/markdown/markdown.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            }
+            },
+            {
+                src: 'plugin/highlight/highlight.js', async: true, condition: function () {
+                return !!document.querySelector('pre code');
+            }, callback: function () {
+                hljs.initHighlightingOnLoad();
+            }
+            },
+            {src: 'plugin/zoom-js/zoom.js', async: true},
+            {src: 'plugin/notes/notes.js', async: true}
+        ]
+    });
+
+</script>
 
 </body>
 </html>

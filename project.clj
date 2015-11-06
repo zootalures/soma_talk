@@ -10,7 +10,8 @@
                  [cljs-http "0.1.21"]]
 
   :plugins [[lein-cljsbuild "1.1.0"]
-            [lein-figwheel "0.4.1"]]
+            [lein-figwheel "0.4.1"]
+            [figwheel-sidecar "0.4.1"]]
 
   :source-paths ["src"]
 
