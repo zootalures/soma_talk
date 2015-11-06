@@ -112,7 +112,7 @@
      (init-lighting scene)
      (start-animation (if spin
                         (fn [abs rel]
-                          (doseq [piece pieces]
+                          (doseq [piece @pieces]
                             (animate-spin piece abs rel)))
                         identity)
                       renderer

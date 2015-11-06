@@ -48,13 +48,16 @@
 <div class="reveal">
     <div class="slides">
         <section class="stack">
-            <h1>Cheating at MathsJam puzzles</h1>
+            <h1>Cheating at <small> (some)</small> maths puzzles</h1>
 
             <p> like a lazy computer scientist</p>
-            <p> (there will be code) </p>
             <p>Owen Cliffe, 2015</p>
         </section>
 
+        <section class="">
+            <img class="fragment fade-in"  height="300px" src="/images/soma-cube.jpg"/>
+            <img class="fragment fade-in"  height="300px" src="/images/john_conway.jpg"/>
+        </section>
         <section class="">
             <h2>Soma Cube</h2>
             <ul>
@@ -65,8 +68,10 @@
                     <li>s.t. at least one corner is formed</li>
                     <li>excluding rotational symmetries</li>
                 </ul>
-                <li>these fit into a 3x3 cube</li>
+                <li>then these fit into a 3x3 cube</li>
+                <ul>
                 <li>in 240 distinct ways (excluding symmetries)</li>
+                </ul>
             </ul>
         </section>
 
@@ -100,7 +105,7 @@ loc(z,p(X,Y,Z),Z) ↤ element(p(X,Y,Z)).
 
         <section >
             <canvas id="canvas1" style=" height:80%; width:80%" width="1024" height="500"></canvas>
-            <p> 20475 solutions ( 27 choose 3 + 27 choose 4) </p>
+            <p class="fragment fade-in"> 20475 solutions ( 27 choose 3 + 27 choose 4) </p>
             <script type="text/javascript">
                 soma_demo.core.display_pieces_from_url("canvas1","/cube_data/part-1.edn",15, true,0.6);
             </script>
@@ -108,6 +113,7 @@ loc(z,p(X,Y,Z),Z) ↤ element(p(X,Y,Z)).
         </section>
 
         <section>
+            <h2> Connectedness </h2>
             <pre><code class="prolog">
 % Two pieces are adjacent if they share the same coordinate in
 % two axes and are one apart in the other
@@ -133,12 +139,12 @@ disconnected ↤ not connected(P1, P2), element(P1), element(P2).
 ⊥↤ disconnected.
            </code> </pre>
         </section>
-        <section class="stretch">
-            <canvas id="canvas3" style=" height:100%; width:100%" width="1024" height="500"></canvas>
+        <section >
+            <canvas id="canvas3"  width="1024" height="500"></canvas>
             <script type="text/javascript">
-                soma_demo.core.display_pieces_from_url("canvas3","/cube_data/part-3.edn");
+                soma_demo.core.display_pieces_from_url("canvas3","/cube_data/part-3.edn", 7, true, 1.0 );
             </script>
-
+            <p class="fragment fade-in">98 solutions</p>
         </section>
 
         <section>
@@ -146,19 +152,21 @@ disconnected ↤ not connected(P1, P2), element(P1), element(P2).
         </section>
 
 
-        <section class="stretch">
-            <canvas id="canvas-sym" style=" height:100%; width:100%" width="1024" height="500"></canvas>
+        <section >
+            <canvas id="canvas-sym"  width="1024" height="500"></canvas>
+            <p class="fragment fade-in">24 rotations</p>
             <script type="text/javascript">
-                soma_demo.core.display_pieces_from_url("canvas-sym","http://localhost:8081/showrotations?n=3",
+                soma_demo.core.display_pieces_from_url("canvas-sym","/cube_data/piece_rotations.edn",
                         6, false, 0.8);
             </script>
         </section>
 
-        <section class="stretch">
-            <canvas id="canvas4" style=" height:100%; width:100%" width="1024" height="500"></canvas>
+        <section >
+            <canvas id="canvas4"  width="1024" height="500"></canvas>
             <script type="text/javascript">
                 soma_demo.core.display_pieces_from_url("canvas4","/cube_data/part-3-bs.edn", 3 , true , 1.2);
             </script>
+            <p class="fragment fade-in">9 pieces</p>
         </section>
 
 
@@ -179,11 +187,12 @@ at_least_one_corner ↤ corner(P2,A3).
 ⊥ ↤ not at_least_one_corner.
             </code></pre>
         </section>
-        <section class="stretch">
-            <canvas id="canvas5" style=" height:100%; width:100%" width="1024" height="500"></canvas>
+        <section >
+            <canvas id="canvas5"  width="1024" height="500"></canvas>
             <script type="text/javascript">
                 soma_demo.core.display_pieces_from_url("canvas5","/cube_data/part-4-bs.edn");
             </script>
+            <p class="fragment fade-in">8 pieces</p>
         </section>
 
         <section>
@@ -199,11 +208,13 @@ at_least_one_corner :- corner(P2,A3), not oppositecorners(P1,_,A3),element(P1).
 
 </code></pre>
         </section>
-        <section class="stretch">
-            <canvas id="pieces-canvas" style=" height:100%; width:100%" width="1024" height="500"></canvas>
+        <section >
+            <canvas id="pieces-canvas"  width="1024" height="500"></canvas>
             <script type="text/javascript">
-                soma_demo.core.display_pieces_from_url("pieces-canvas","http://localhost:8081/pieces-stage/5?bs=true", 7 ,true);
+                soma_demo.core.display_pieces_from_url("pieces-canvas","/cube_data/distinct_pieces.edn", 7 ,true);
             </script>
+            <p class="fragment fade-in">7 pieces</p>
+
         </section>
 
         <section>
@@ -230,18 +241,18 @@ occupied(L) ↤ element(P,L).
 ⊥ ↤ not occupied(L), loc(L).
                 </code></pre>
         </section>
-        <section class="stretch">
-            <canvas id="solutions" style=" height:100%; width:100%" width="1024" height="500"></canvas>
+        <section >
+            <canvas id="solutions"  width="1024" height="500"></canvas>
             <script type="text/javascript">
-                soma_demo.core.display_sln_from_url("solutions","http://localhost:8081/puzzle-solution?n=1",1,  0.5);
+                soma_demo.core.display_sln_from_url("solutions","/cube_data/first_solution.edn",1,  0.5);
             </script>
-            <p> </p>
+            <p class="fragment fade-in"> 11520 solutions </p>
         </section>
 
-        <section class="stretch">
-            <canvas id="allsolutions" style=" height:100%; width:100%" width="1024" height="500"></canvas>
+        <section >
+            <canvas id="allsolutions"  width="1024" height="600"></canvas>
             <script type="text/javascript">
-                soma_demo.core.display_sln_from_url("allsolutions","http://localhost:8081/puzzle-solution?n=240", 24 , 0.5);
+                soma_demo.core.display_sln_from_url("allsolutions","/cube_data/distinct_solutions.edn", 20 , 0.5);
             </script>
 
         </section>
