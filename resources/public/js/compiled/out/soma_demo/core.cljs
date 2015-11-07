@@ -108,7 +108,7 @@
          camera (init-camera scene width height)
          renderer (init-renderer canvas-element)
          pieces (atom [])]
-     (println "showing in " width ":" height)
+   ;  (println "showing in " width ":" height)
      (init-lighting scene)
      (start-animation (if spin
                         (fn [abs rel]
@@ -137,7 +137,7 @@
                  gy (Math.floor (/ idx cols))
                  gx (mod idx cols)
                  [cx cy] (place-piece rows cols (* 3 cubesize) (* 2 cubesize) gx gy)]
-             (println [rows cols] "placing piece " idx " at grid " [gx gy] " in pos " [cx cy])
+         ;    (println [rows cols] "placing piece " idx " at grid " [gx gy] " in pos " [cx cy])
              (doto piece (.. -position (set cx
                                             cy
                                             0)))
@@ -229,12 +229,9 @@
         (doseq [{cube-geom :geom  cube-pieces :pieces} @cubes]
           (animate-spin cube-geom abs rel)
           (doseq [{piece-geom :geom parts :parts} cube-pieces]
-            (animate-explode-part piece-geom parts  (Math.max 0 (* 200 (Math.sin (/ abs 2000) ))))
-            )
-
-          )
-
-        )
+            (let [v (Math.sin (/ abs 2000))]
+              (animate-explode-part piece-geom parts  (Math.max 0 (* 150 (+ 1 v ))))
+            ))))
       renderer
       scene
       camera)
@@ -247,7 +244,7 @@
             pieces-plane (js/THREE.Object3D.)
             ]
         (doseq [[idx sln] (map-indexed vector solutions)]
-          (println "creating" idx " for solution " sln)
+        ;  (println "creating" idx " for solution " sln)
           (let [{cube-geom :geom
                  pieces    :pieces
                  :as       cube}
@@ -255,7 +252,6 @@
                 gy (Math.floor (/ idx cols))
                 gx (mod idx cols)
                 [cx cy] (place-piece rows cols (* 2 cubesize) (* 2 cubesize) gx gy)]
-            (println " creating " cube)
 
             (doto cube-geom (.. -position (set cx
                                                cy

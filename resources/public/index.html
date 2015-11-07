@@ -51,7 +51,7 @@
             <h1>Cheating at <small> (some)</small> maths puzzles</h1>
 
             <p> like a lazy computer scientist</p>
-            <p>Owen Cliffe, 2015</p>
+            <p>Owen Cliffe, 2015   @zootalures</p>
         </section>
 
         <section class="">
@@ -152,6 +152,40 @@ disconnected ↤ not connected(P1, P2), element(P1), element(P2).
         </section>
 
 
+        <section>
+             <pre><code class="prolog">
+% possible rotations to build octahedral symmetry
+rotv(x, 0). rotv(x, 90). rotv(x, 180). rotv(x, 270).
+rotv(y, 0). rotv(y, 90). rotv(y, 180).
+rotv(z, 0). rotv(z, 90).
+
+% trig functions we need
+sin(0,0). sin(90,1). sin(180,0). sin(270,-1).
+cos(0,1). cos(90,0). cos(180,-1). cos(270,0).
+
+% Pick one rotation per axis from possible list
+1{ rot(P,A,R) :  rotv(A,R) } 1 :- piece(P),axis(A).
+             </code> </pre>
+        </section>
+
+        <section>
+             <pre><code class="prolog">
+
+% Place an element into space based on its rotation and translation
+place_rotated_part(P,r(RX,RY,RZ),p(X,Y,Z) :-
+        part(P,p(IX,IY,IZ)),
+        rot(P,x,RX),rot(P,y,RY),  rot(P,z,RZ),
+        sin(RX,SRX), sin(RY,SRY), sin(RZ,SRZ),
+        cos(RX,CRX), cos(RY,CRY), cos(RZ,CRZ),
+        X = (((((IY * SRX) + (IZ - CRX)) * SRY) + (IX * CRY)) * CRZ) -
+                 (((IY * CRX) - (IZ - SRX))  * SRZ),
+        Y = (((((IY * SRX) + (IZ - CRX)) * SRY) + (IX * CRY)) * SRZ) +
+                 (((IY * CRX) - (IZ - SRX)) * CRZ),
+        Z = (((IY * SRX) + (IZ - CRX)) * CRY) - (IX * SRY)) .
+             </code> </pre>
+        </section>
+
+
         <section >
             <canvas id="canvas-sym"  width="1024" height="500"></canvas>
             <p class="fragment fade-in">24 rotations</p>
@@ -225,11 +259,11 @@ at_least_one_corner :- corner(P2,A3), not oppositecorners(P1,_,A3),element(P1).
              <pre>
 <code class="prolog fragment fade-in">
 % pick exactly one rotation and translation for each piece
-1{tranform_element(P,R,T) : poss_location(P,R,T,_) }1 ↤ piece(P) .
+1{transform_element(P,R,T) : poss_location(P,R,T,_) }1 ↤ piece(P) .
 </code >
 <code class="prolog fragment fade-in">
 % place each element of each piece according to its translation and rotation
-element(P,L)↤ tranform_element(P,R,T),poss_location(P,R,T,L).
+element(P,L)↤ transform_element(P,R,T),poss_location(P,R,T,L).
 </code>
 <code class="prolog fragment fade-in">
 % two elements cannot occupy the same coordinate
