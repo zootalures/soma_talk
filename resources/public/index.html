@@ -22,14 +22,7 @@
     <!-- Code syntax highlighting -->
     <link rel="stylesheet" href="presentation/lib/css/zenburn.css">
 
-    <!-- Printing and PDF exports -->
-    <script>
-        var link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.type = 'text/css';
-        link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
-        document.getElementsByTagName('head')[0].appendChild(link);
-    </script>
+
 
 
     <script src="libjs/three.js" type="text/javascript"></script>
@@ -107,7 +100,7 @@
         </section>
 
 
-        <section>
+        <section data-animatesoma="canvas1">
             <canvas id="canvas1" style=" height:80%; width:80%" width="1024" height="500"></canvas>
             <p class="fragment fade-in"> 20475 solutions ( 27 choose 3 + 27 choose 4) </p>
             <script type="text/javascript">
@@ -143,7 +136,7 @@
                 ⊥↤ disconnected.
             </code> </pre>
         </section>
-        <section>
+        <section data-animatesoma="canvas3">
             <canvas id="canvas3" width="1024" height="500"></canvas>
             <script type="text/javascript">
                 soma_demo.core.display_pieces_from_url("canvas3", "cube_data/part-3.edn", 7, true, 1.0);
@@ -190,7 +183,7 @@
         </section>
 
 
-        <section>
+        <section data-animatesoma="canvas-sym">
             <canvas id="canvas-sym" width="1024" height="500"></canvas>
             <p class="fragment fade-in">24 rotations</p>
             <script type="text/javascript">
@@ -199,7 +192,7 @@
             </script>
         </section>
 
-        <section>
+        <section data-animatesoma="canvas4">
             <canvas id="canvas4" width="1024" height="500"></canvas>
             <script type="text/javascript">
                 soma_demo.core.display_pieces_from_url("canvas4", "cube_data/part-3-bs.edn", 3, true, 1.2);
@@ -224,7 +217,7 @@
                     ⊥ ↤ not at_least_one_corner.
                 </code></pre>
         </section>
-        <section>
+        <section data-animatesoma="canvas5">
             <canvas id="canvas5" width="1024" height="500"></canvas>
             <script type="text/javascript">
                 soma_demo.core.display_pieces_from_url("canvas5", "cube_data/part-4-bs.edn");
@@ -245,7 +238,7 @@
 
                 </code></pre>
         </section>
-        <section>
+        <section data-animatesoma="pieces-canvas">
             <canvas id="pieces-canvas" width="1024" height="500"></canvas>
             <script type="text/javascript">
                 soma_demo.core.display_pieces_from_url("pieces-canvas", "cube_data/distinct_pieces.edn", 7, true);
@@ -278,7 +271,7 @@
     ⊥ ↤ not occupied(L), loc(L).
 </code></pre>
         </section>
-        <section>
+        <section data-animatesoma="solutions">
             <canvas id="solutions" width="1024" height="500"></canvas>
             <script type="text/javascript">
                 soma_demo.core.display_sln_from_url("solutions", "cube_data/first_solution.edn", 1, 0.5);
@@ -286,7 +279,7 @@
             <p class="fragment fade-in"> 11520 solutions </p>
         </section>
 
-        <section>
+        <section data-animatesoma="allsolutions">
             <canvas id="allsolutions" width="1024" height="600"></canvas>
             <script type="text/javascript">
                 soma_demo.core.display_sln_from_url("allsolutions", "cube_data/distinct_solutions.edn", 20, 0.5);
@@ -304,12 +297,12 @@
                     <a href="https://github.com/zootalures/soma_talk_server/tree/master/resources/public/examples/3dpuzzle">ASP
                         Code for talk</a></li>
             </ul>
-
         </section>
     </div>
 </div>
 
 <script src="presentation/lib/js/head.min.js"></script>
+
 <script src="presentation/js/reveal.js"></script>
 
 <script>
@@ -331,28 +324,27 @@
                 src: 'lib/js/classList.js', condition: function () {
                 return !document.body.classList;
             }
-            },
-            {
-                src: 'plugin/markdown/marked.js', condition: function () {
-                return !!document.querySelector('[data-markdown]');
             }
-            },
-            {
-                src: 'plugin/markdown/markdown.js', condition: function () {
-                return !!document.querySelector('[data-markdown]');
-            }
-            },
-            {
-                src: 'plugin/highlight/highlight.js', async: true, condition: function () {
-                return !!document.querySelector('pre code');
-            }, callback: function () {
-                hljs.initHighlightingOnLoad();
-            }
-            },
-            {src: 'plugin/zoom-js/zoom.js', async: true},
-            {src: 'plugin/notes/notes.js', async: true}
+
+
         ]
     });
+    Reveal.addEventListener( 'slidechanged', function( event ) {
+        // event.previousSlide, event.currentSlide, event.indexh, event.indexv
+        console.log("slidechanged" ,event);
+
+        if(event.previousSlide.dataset.animatesoma != undefined){
+            soma_demo.core.stop_animation(event.previousSlide.dataset.animatesoma);
+        }
+
+        if(event.currentSlide.dataset.animatesoma != undefined){
+            soma_demo.core.start_animation(event.currentSlide.dataset.animatesoma);
+        }
+
+    } );
+
+
+
 
 </script>
 
