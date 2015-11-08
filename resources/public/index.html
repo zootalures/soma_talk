@@ -48,15 +48,19 @@
 <div class="reveal">
     <div class="slides">
         <section class="stack">
-            <h1>Cheating at <small> (some)</small> maths puzzles</h1>
+            <h1>Cheating at
+                <small> (some)</small>
+                maths puzzles
+            </h1>
 
             <p> like a lazy computer scientist</p>
-            <p>Owen Cliffe, 2015   @zootalures</p>
+
+            <p>Owen Cliffe, 2015 @zootalures</p>
         </section>
 
         <section class="">
-            <img class="fragment fade-in"  height="300px" src="images/soma-cube.jpg"/>
-            <img class="fragment fade-in"  height="300px" src="images/john_conway.jpg"/>
+            <img class="fragment fade-in" height="300px" src="images/soma-cube.jpg"/>
+            <img class="fragment fade-in" height="300px" src="images/john_conway.jpg"/>
         </section>
         <section class="">
             <h2>Soma Cube</h2>
@@ -70,7 +74,7 @@
                 </ul>
                 <li>then these fit into a 3x3 cube</li>
                 <ul>
-                <li>in 240 distinct ways (excluding symmetries)</li>
+                    <li>in 240 distinct ways (excluding symmetries)</li>
                 </ul>
             </ul>
         </section>
@@ -82,32 +86,32 @@
         </section>
         <section>
             <pre><code class="prolog">
-% 3 axes
-axis(x).  axis(y). axis(z).
+                % 3 axes
+                axis(x). axis(y). axis(z).
 
-% 3 positions
-pos(0). pos(1). pos(2).
+                % 3 positions
+                pos(0). pos(1). pos(2).
 
-% index the location of each part in each axis
-loc(x,p(X,Y,Z),X) ↤ element(p(X,Y,Z)).
-loc(y,p(X,Y,Z),Y) ↤ element(p(X,Y,Z)).
-loc(z,p(X,Y,Z),Z) ↤ element(p(X,Y,Z)).
+                % index the location of each part in each axis
+                loc(x,p(X,Y,Z),X) ↤ element(p(X,Y,Z)).
+                loc(y,p(X,Y,Z),Y) ↤ element(p(X,Y,Z)).
+                loc(z,p(X,Y,Z),Z) ↤ element(p(X,Y,Z)).
             </code> </pre>
         </section>
 
         <section>
             <pre><code class="prolog">
-% generate all combinations of 3 and four blocks in the cube
-3 { element(p(X,Y,Z)) : pos(X), pos(Y), pos(Z)} 4.
+                % generate all combinations of 3 and four blocks in the cube
+                3 { element(p(X,Y,Z)) : pos(X), pos(Y), pos(Z)} 4.
             </code> </pre>
         </section>
 
 
-        <section >
+        <section>
             <canvas id="canvas1" style=" height:80%; width:80%" width="1024" height="500"></canvas>
             <p class="fragment fade-in"> 20475 solutions ( 27 choose 3 + 27 choose 4) </p>
             <script type="text/javascript">
-                soma_demo.core.display_pieces_from_url("canvas1","cube_data/part-1.edn",15, true,0.6);
+                soma_demo.core.display_pieces_from_url("canvas1", "cube_data/part-1.edn", 15, true, 0.6);
             </script>
 
         </section>
@@ -115,34 +119,34 @@ loc(z,p(X,Y,Z),Z) ↤ element(p(X,Y,Z)).
         <section>
             <h2> Connectedness </h2>
             <pre><code class="prolog">
-% Two pieces are adjacent if they share the same coordinate in
-% two axes and are one apart in the other
-adjacent(A,P1,P2) ↤
-    loc(A,P1,R), loc(A, P2, R+1), % adjacent axes
-    loc(B,P1,S), loc(B, P2, S),  % same axes
-    loc(C,P1,T), loc(C, P2, T),  % same axes
-    B!=C,A!=B,A!=C,B!=C, element(P1),element(P2).</code></pre>
+                % Two pieces are adjacent if they share the same coordinate in
+                % two axes and are one apart in the other
+                adjacent(A,P1,P2) ↤
+                loc(A,P1,R), loc(A, P2, R+1), % adjacent axes
+                loc(B,P1,S), loc(B, P2, S), % same axes
+                loc(C,P1,T), loc(C, P2, T), % same axes
+                B!=C,A!=B,A!=C,B!=C, element(P1),element(P2).</code></pre>
         </section>
 
         <section>
             <pre><code class="prolog">
-% connected is adjacent
-connected(P1,P2) ↤ adjacent (_,P1, P2).
+                % connected is adjacent
+                connected(P1,P2) ↤ adjacent (_,P1, P2).
 
-% connectedness is transitive
-connected(P1,P3) ↤ connected(P1,P2), connected(P2,P3) .
+                % connectedness is transitive
+                connected(P1,P3) ↤ connected(P1,P2), connected(P2,P3) .
 
-% model is disconnected if any two parts are not conected
-disconnected ↤ not connected(P1, P2), element(P1), element(P2).
+                % model is disconnected if any two parts are not conected
+                disconnected ↤ not connected(P1, P2), element(P1), element(P2).
 
-% exclude solutions which are disconnected
-⊥↤ disconnected.
-           </code> </pre>
+                % exclude solutions which are disconnected
+                ⊥↤ disconnected.
+            </code> </pre>
         </section>
-        <section >
-            <canvas id="canvas3"  width="1024" height="500"></canvas>
+        <section>
+            <canvas id="canvas3" width="1024" height="500"></canvas>
             <script type="text/javascript">
-                soma_demo.core.display_pieces_from_url("canvas3","cube_data/part-3.edn", 7, true, 1.0 );
+                soma_demo.core.display_pieces_from_url("canvas3", "cube_data/part-3.edn", 7, true, 1.0);
             </script>
             <p class="fragment fade-in">98 solutions</p>
         </section>
@@ -154,77 +158,76 @@ disconnected ↤ not connected(P1, P2), element(P1), element(P2).
 
         <section>
              <pre><code class="prolog">
-% possible rotations to build octahedral symmetry
-rotv(x, 0). rotv(x, 90). rotv(x, 180). rotv(x, 270).
-rotv(y, 0). rotv(y, 90). rotv(y, 180).
-rotv(z, 0). rotv(z, 90).
+                 % possible rotations to build octahedral symmetry
+                 rotv(x, 0). rotv(x, 90). rotv(x, 180). rotv(x, 270).
+                 rotv(y, 0). rotv(y, 90). rotv(y, 180).
+                 rotv(z, 0). rotv(z, 90).
 
-% trig functions we need
-sin(0,0). sin(90,1). sin(180,0). sin(270,-1).
-cos(0,1). cos(90,0). cos(180,-1). cos(270,0).
+                 % trig functions we need
+                 sin(0,0). sin(90,1). sin(180,0). sin(270,-1).
+                 cos(0,1). cos(90,0). cos(180,-1). cos(270,0).
 
-% Pick one rotation per axis from possible list
-1{ rot(P,A,R) :  rotv(A,R) } 1 :- piece(P),axis(A).
+                 % Pick one rotation per axis from possible list
+                 1{ rot(P,A,R) : rotv(A,R) } 1 :- piece(P),axis(A).
              </code> </pre>
         </section>
 
         <section>
              <pre><code class="prolog">
 
-% Place an element into space based on its rotation and translation
-place_rotated_part(P,r(RX,RY,RZ),p(X,Y,Z) :-
-        part(P,p(IX,IY,IZ)),
-        rot(P,x,RX),rot(P,y,RY),  rot(P,z,RZ),
-        sin(RX,SRX), sin(RY,SRY), sin(RZ,SRZ),
-        cos(RX,CRX), cos(RY,CRY), cos(RZ,CRZ),
-        X = (((((IY * SRX) + (IZ - CRX)) * SRY) + (IX * CRY)) * CRZ) -
-                 (((IY * CRX) - (IZ - SRX))  * SRZ),
-        Y = (((((IY * SRX) + (IZ - CRX)) * SRY) + (IX * CRY)) * SRZ) +
+                 % Place an element into space based on its rotation and translation
+                 place_rotated_part(P,r(RX,RY,RZ),p(X,Y,Z) :-
+                 part(P,p(IX,IY,IZ)),
+                 rot(P,x,RX),rot(P,y,RY), rot(P,z,RZ),
+                 sin(RX,SRX), sin(RY,SRY), sin(RZ,SRZ),
+                 cos(RX,CRX), cos(RY,CRY), cos(RZ,CRZ),
+                 X = (((((IY * SRX) + (IZ - CRX)) * SRY) + (IX * CRY)) * CRZ) -
+                 (((IY * CRX) - (IZ - SRX)) * SRZ),
+                 Y = (((((IY * SRX) + (IZ - CRX)) * SRY) + (IX * CRY)) * SRZ) +
                  (((IY * CRX) - (IZ - SRX)) * CRZ),
-        Z = (((IY * SRX) + (IZ - CRX)) * CRY) - (IX * SRY)) .
+                 Z = (((IY * SRX) + (IZ - CRX)) * CRY) - (IX * SRY)) .
              </code> </pre>
         </section>
 
 
-        <section >
-            <canvas id="canvas-sym"  width="1024" height="500"></canvas>
+        <section>
+            <canvas id="canvas-sym" width="1024" height="500"></canvas>
             <p class="fragment fade-in">24 rotations</p>
             <script type="text/javascript">
-                soma_demo.core.display_pieces_from_url("canvas-sym","cube_data/piece_rotations.edn",
+                soma_demo.core.display_pieces_from_url("canvas-sym", "cube_data/piece_rotations.edn",
                         6, false, 0.8);
             </script>
         </section>
 
-        <section >
-            <canvas id="canvas4"  width="1024" height="500"></canvas>
+        <section>
+            <canvas id="canvas4" width="1024" height="500"></canvas>
             <script type="text/javascript">
-                soma_demo.core.display_pieces_from_url("canvas4","cube_data/part-3-bs.edn", 3 , true , 1.2);
+                soma_demo.core.display_pieces_from_url("canvas4", "cube_data/part-3-bs.edn", 3, true, 1.2);
             </script>
             <p class="fragment fade-in">9 pieces</p>
         </section>
 
 
-
         <section>
             <pre>
                 <code class="prolog">
-% a corner  consists of three adjacent pieces, adjacent in two distinct axes.
-corner(P2,A3) ↤
- adjacent(A1,P1,P2), adjacent(A2,P2,P3),
- axis(A3), A1!=A2, A2!=A3,
- P1!=P3 , A1!=A2,A1!=A3.
+                    % a corner consists of three adjacent pieces, adjacent in two distinct axes.
+                    corner(P2,A3) ↤
+                    adjacent(A1,P1,P2), adjacent(A2,P2,P3),
+                    axis(A3), A1!=A2, A2!=A3,
+                    P1!=P3 , A1!=A2,A1!=A3.
 
-% a piece has inflections if it has at least one corner
-at_least_one_corner ↤ corner(P2,A3).
+                    % a piece has inflections if it has at least one corner
+                    at_least_one_corner ↤ corner(P2,A3).
 
-% Exclude models without any corners
-⊥ ↤ not at_least_one_corner.
-            </code></pre>
+                    % Exclude models without any corners
+                    ⊥ ↤ not at_least_one_corner.
+                </code></pre>
         </section>
-        <section >
-            <canvas id="canvas5"  width="1024" height="500"></canvas>
+        <section>
+            <canvas id="canvas5" width="1024" height="500"></canvas>
             <script type="text/javascript">
-                soma_demo.core.display_pieces_from_url("canvas5","cube_data/part-4-bs.edn");
+                soma_demo.core.display_pieces_from_url("canvas5", "cube_data/part-4-bs.edn");
             </script>
             <p class="fragment fade-in">8 pieces</p>
         </section>
@@ -232,62 +235,75 @@ at_least_one_corner ↤ corner(P2,A3).
         <section>
             <pre>
                 <code class="prolog">
-% corners are opposite if they share two adjacent pieces
-oppositecorners(P1,P2,A) ↤ corner(P1,A), corner(P2,A),
-                          adjacent(_,P1,P3), adjacent(_,P2,P3), P1!=P3,P1!=P2.
+                    % corners are opposite if they share two adjacent pieces
+                    oppositecorners(P1,P2,A) ↤ corner(P1,A), corner(P2,A),
+                    adjacent(_,P1,P3), adjacent(_,P2,P3), P1!=P3,P1!=P2.
 
-% opposite corners are not infjections
-at_least_one_corner :- corner(P2,A3), not oppositecorners(P1,_,A3),element(P1).
-⊥ ↤ not at_least_one_corner.
+                    % opposite corners are not infjections
+                    at_least_one_corner :- corner(P2,A3), not oppositecorners(P1,_,A3),element(P1).
+                    ⊥ ↤ not at_least_one_corner.
 
-</code></pre>
+                </code></pre>
         </section>
-        <section >
-            <canvas id="pieces-canvas"  width="1024" height="500"></canvas>
+        <section>
+            <canvas id="pieces-canvas" width="1024" height="500"></canvas>
             <script type="text/javascript">
-                soma_demo.core.display_pieces_from_url("pieces-canvas","cube_data/distinct_pieces.edn", 7 ,true);
+                soma_demo.core.display_pieces_from_url("pieces-canvas", "cube_data/distinct_pieces.edn", 7, true);
             </script>
             <p class="fragment fade-in">7 pieces</p>
 
         </section>
 
         <section>
-                <h2> Solving the cube</h2>
+            <h2> Solving the cube</h2>
         </section>
 
         <section>
              <pre>
 <code class="prolog fragment fade-in">
-% pick exactly one rotation and translation for each piece
-1{transform_element(P,R,T) : poss_location(P,R,T,_) }1 ↤ piece(P) .
-</code >
-<code class="prolog fragment fade-in">
-% place each element of each piece according to its translation and rotation
-element(P,L)↤ transform_element(P,R,T),poss_location(P,R,T,L).
+    % pick exactly one rotation and translation for each piece
+    1{transform_element(P,R,T) : poss_location(P,R,T,_) }1 ↤ piece(P) .
 </code>
 <code class="prolog fragment fade-in">
-% two elements cannot occupy the same coordinate
-⊥ ↤ element(P1,L),element(P2,L),P1!=P2.
+    % place each element of each piece according to its translation and rotation
+    element(P,L)↤ transform_element(P,R,T),poss_location(P,R,T,L).
 </code>
 <code class="prolog fragment fade-in">
-% each element in the cube  must be occupied
-occupied(L) ↤ element(P,L).
-⊥ ↤ not occupied(L), loc(L).
-                </code></pre>
+    % two elements cannot occupy the same coordinate
+    ⊥ ↤ element(P1,L),element(P2,L),P1!=P2.
+</code>
+<code class="prolog fragment fade-in">
+    % each element in the cube must be occupied
+    occupied(L) ↤ element(P,L).
+    ⊥ ↤ not occupied(L), loc(L).
+</code></pre>
         </section>
-        <section >
-            <canvas id="solutions"  width="1024" height="500"></canvas>
+        <section>
+            <canvas id="solutions" width="1024" height="500"></canvas>
             <script type="text/javascript">
-                soma_demo.core.display_sln_from_url("solutions","cube_data/first_solution.edn",1,  0.5);
+                soma_demo.core.display_sln_from_url("solutions", "cube_data/first_solution.edn", 1, 0.5);
             </script>
             <p class="fragment fade-in"> 11520 solutions </p>
         </section>
 
-        <section >
-            <canvas id="allsolutions"  width="1024" height="600"></canvas>
+        <section>
+            <canvas id="allsolutions" width="1024" height="600"></canvas>
             <script type="text/javascript">
-                soma_demo.core.display_sln_from_url("allsolutions","cube_data/distinct_solutions.edn", 20 , 0.5);
+                soma_demo.core.display_sln_from_url("allsolutions", "cube_data/distinct_solutions.edn", 20, 0.5);
             </script>
+
+        </section>
+
+        <section>
+            <h2> Links </h2>
+            <ul>
+                <li><a href="https://en.wikipedia.org/wiki/Answer_set_programming">Answer Set Programming</a></li>
+                <li><a href="http://potassco.sourceforge.net/">Clingo - the solver I use </a></li>
+                <li><a href="https://github.com/zootalures/soma_talk">Soure for slides </a></li>
+                <li>
+                    <a href="https://github.com/zootalures/soma_talk_server/tree/master/resources/public/examples/3dpuzzle">ASP
+                        Code for talk</a></li>
+            </ul>
 
         </section>
     </div>
