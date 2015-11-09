@@ -79,23 +79,23 @@
         </section>
         <section>
             <pre><code class="prolog">
-                % 3 axes
-                axis(x). axis(y). axis(z).
+% 3 axes
+axis(x). axis(y). axis(z).
 
-                % 3 positions
-                pos(0). pos(1). pos(2).
+% 3 positions
+pos(0). pos(1). pos(2).
 
-                % index the location of each part in each axis
-                loc(x,p(X,Y,Z),X) ↤ element(p(X,Y,Z)).
-                loc(y,p(X,Y,Z),Y) ↤ element(p(X,Y,Z)).
-                loc(z,p(X,Y,Z),Z) ↤ element(p(X,Y,Z)).
+% index the location of each part in each axis
+loc(x,p(X,Y,Z),X) ↤ element(p(X,Y,Z)).
+loc(y,p(X,Y,Z),Y) ↤ element(p(X,Y,Z)).
+loc(z,p(X,Y,Z),Z) ↤ element(p(X,Y,Z)).
             </code> </pre>
         </section>
 
         <section>
             <pre><code class="prolog">
-                % generate all combinations of 3 and four blocks in the cube
-                3 { element(p(X,Y,Z)) : pos(X), pos(Y), pos(Z)} 4.
+% generate all combinations of 3 and four blocks in the cube
+3 { element(p(X,Y,Z)) : pos(X), pos(Y), pos(Z)} 4.
             </code> </pre>
         </section>
 
@@ -112,28 +112,28 @@
         <section>
             <h2> Connectedness </h2>
             <pre><code class="prolog">
-                % Two pieces are adjacent if they share the same coordinate in
-                % two axes and are one apart in the other
-                adjacent(A,P1,P2) ↤
-                loc(A,P1,R), loc(A, P2, R+1), % adjacent axes
-                loc(B,P1,S), loc(B, P2, S), % same axes
-                loc(C,P1,T), loc(C, P2, T), % same axes
-                B!=C,A!=B,A!=C,B!=C, element(P1),element(P2).</code></pre>
+% Two pieces are adjacent if they share the same coordinate in
+% two axes and are one apart in the other
+adjacent(A,P1,P2) ↤
+loc(A,P1,R), loc(A, P2, R+1), % adjacent axes
+loc(B,P1,S), loc(B, P2, S), % same axes
+loc(C,P1,T), loc(C, P2, T), % same axes
+B!=C,A!=B,A!=C,B!=C, element(P1),element(P2).</code></pre>
         </section>
 
         <section>
             <pre><code class="prolog">
-                % connected is adjacent
-                connected(P1,P2) ↤ adjacent (_,P1, P2).
+% connected is adjacent
+connected(P1,P2) ↤ adjacent (_,P1, P2).
 
-                % connectedness is transitive
-                connected(P1,P3) ↤ connected(P1,P2), connected(P2,P3) .
+% connectedness is transitive
+connected(P1,P3) ↤ connected(P1,P2), connected(P2,P3) .
 
-                % model is disconnected if any two parts are not conected
-                disconnected ↤ not connected(P1, P2), element(P1), element(P2).
+% model is disconnected if any two parts are not conected
+disconnected ↤ not connected(P1, P2), element(P1), element(P2).
 
-                % exclude solutions which are disconnected
-                ⊥↤ disconnected.
+% exclude solutions which are disconnected
+⊥↤ disconnected.
             </code> </pre>
         </section>
         <section data-animatesoma="canvas3">
@@ -200,17 +200,17 @@ rotated_part(r(RX,RY,RZ),p(IX,IY,IZ),p(RX_X,RX_Y,RX_Z)) :-
         <section>
             <pre>
                 <code class="prolog">
-                    % a corner consists of three adjacent pieces, adjacent in two distinct axes.
-                    corner(P2,A3) ↤
-                    adjacent(A1,P1,P2), adjacent(A2,P2,P3),
-                    axis(A3), A1!=A2, A2!=A3,
-                    P1!=P3 , A1!=A2,A1!=A3.
+% a corner consists of three adjacent pieces, adjacent in two distinct axes.
+corner(P2,A3) ↤
+adjacent(A1,P1,P2), adjacent(A2,P2,P3),
+axis(A3), A1!=A2, A2!=A3,
+P1!=P3 , A1!=A2,A1!=A3.
 
-                    % a piece has inflections if it has at least one corner
-                    at_least_one_corner ↤ corner(P2,A3).
+% a piece has inflections if it has at least one corner
+at_least_one_corner ↤ corner(P2,A3).
 
-                    % Exclude models without any corners
-                    ⊥ ↤ not at_least_one_corner.
+% Exclude models without any corners
+⊥ ↤ not at_least_one_corner.
                 </code></pre>
         </section>
         <section data-animatesoma="canvas5">
@@ -224,13 +224,13 @@ rotated_part(r(RX,RY,RZ),p(IX,IY,IZ),p(RX_X,RX_Y,RX_Z)) :-
         <section>
             <pre>
                 <code class="prolog">
-                    % corners are opposite if they share two adjacent pieces
-                    oppositecorners(P1,P2,A) ↤ corner(P1,A), corner(P2,A),
-                    adjacent(_,P1,P3), adjacent(_,P2,P3), P1!=P3,P1!=P2.
+% corners are opposite if they share two adjacent pieces
+oppositecorners(P1,P2,A) ↤ corner(P1,A), corner(P2,A),
+adjacent(_,P1,P3), adjacent(_,P2,P3), P1!=P3,P1!=P2.
 
-                    % opposite corners are not infjections
-                    at_least_one_corner :- corner(P2,A3), not oppositecorners(P1,_,A3),element(P1).
-                    ⊥ ↤ not at_least_one_corner.
+% opposite corners are not infjections
+at_least_one_corner :- corner(P2,A3), not oppositecorners(P1,_,A3),element(P1).
+⊥ ↤ not at_least_one_corner.
 
                 </code></pre>
         </section>
@@ -250,21 +250,21 @@ rotated_part(r(RX,RY,RZ),p(IX,IY,IZ),p(RX_X,RX_Y,RX_Z)) :-
         <section>
              <pre>
 <code class="prolog fragment fade-in">
-    % pick exactly one rotation and translation for each piece
-    1{transform_element(P,R,T) : poss_location(P,R,T,_) }1 ↤ piece(P) .
+% pick exactly one rotation and translation for each piece
+1{transform_element(P,R,T) : poss_location(P,R,T,_) }1 ↤ piece(P) .
 </code>
 <code class="prolog fragment fade-in">
-    % place each element of each piece according to its translation and rotation
-    element(P,L)↤ transform_element(P,R,T),poss_location(P,R,T,L).
+% place each element of each piece according to its translation and rotation
+element(P,L)↤ transform_element(P,R,T),poss_location(P,R,T,L).
 </code>
 <code class="prolog fragment fade-in">
-    % two elements cannot occupy the same coordinate
-    ⊥ ↤ element(P1,L),element(P2,L),P1!=P2.
+% two elements cannot occupy the same coordinate
+⊥ ↤ element(P1,L),element(P2,L),P1!=P2.
 </code>
 <code class="prolog fragment fade-in">
-    % each element in the cube must be occupied
-    occupied(L) ↤ element(P,L).
-    ⊥ ↤ not occupied(L), loc(L).
+% each element in the cube must be occupied
+occupied(L) ↤ element(P,L).
+⊥ ↤ not occupied(L), loc(L).
 </code></pre>
         </section>
         <section data-animatesoma="solutions">
