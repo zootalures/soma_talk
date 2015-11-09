@@ -32,7 +32,7 @@
               :source-paths ["src"]
               :compiler {:output-to "resources/public/js/compiled/soma_demo.js"
                          :main soma-demo.core
-                         :optimizations :advanced
+                       
                          :pretty-print false}}]}
 
   :figwheel {

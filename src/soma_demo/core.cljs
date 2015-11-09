@@ -43,14 +43,12 @@
   "register an animator by ID - call (start/stop-enimation id "
   [element-id update-animation renderer scene camera]
   (let [last-update (atom (.getTime (js/Date.)))
-          animation-fn (fn []
-                         (let [curtime (.getTime (js/Date.))]
-                           (update-animation @last-update (/ (- curtime @last-update) 1000))
-                           (reset! last-update curtime))
-                         (.render renderer scene camera))]
-    (reset! animators (assoc @animators element-id [false animation-fn] ))
-    (animation-fn)
-    ))
+        animation-fn (fn []
+                       (let [curtime (.getTime (js/Date.))]
+                         (update-animation @last-update (/ (- curtime @last-update) 1000))
+                         (reset! last-update curtime))
+                       (.render renderer scene camera))]
+    (reset! animators (assoc @animators element-id [false animation-fn] ))))
 
 
 (def global-anim-fn (atom nil))
@@ -58,10 +56,13 @@
 (defn main-animator
   "Main animation interation entry point - called when at least one animation is enabled"
   []
-  (doseq [[enabled? anim-fn]
-          (vals @animators)]
-    (when enabled? (anim-fn)))
+  (doseq [[id [enabled? anim-fn]]  @animators]
+    (when enabled?
+      (do
+  ;      (println "anim " id)
+        (anim-fn))))
   (when @global-anim-fn
+ ;   (do (println "next")
     (.requestAnimationFrame js/window @global-anim-fn)))
 
 
@@ -70,9 +71,10 @@
   [element-id]
   (if-let [[_ anim-fn ] (get @animators element-id)]
     (do
-      (println "starting  " element-id)
       (reset! animators (assoc @animators element-id [ true anim-fn]))
+      (println "starting animation " element-id @animators)
       (when-not @global-anim-fn
+        (println "starting anim loop")
         (reset! global-anim-fn main-animator)
         (main-animator)))))
 
@@ -81,9 +83,12 @@
   [element-id]
   (if-let [[_ anim-fn ] (get @animators element-id)]
     (do
+      (println "stopping animation " element-id @animators)
       (reset! animators (assoc @animators element-id [ false anim-fn]))
       (if (not (some (partial first ) (keys @animators)))
-        (reset! global-anim-fn nil)))))
+        (do
+          (println "turning off anim loop")
+          (reset! global-anim-fn nil))))))
 
 (defn stop-all-animations
   "stop all animations "
@@ -119,6 +124,7 @@
         (reduce
           (fn
             [parent [x y z]]
+            (println "creating cube " x y z )
             (let [cube (js/THREE.CubeGeometry. cubesize cubesize cubesize)
                   cubemesh (js/THREE.Mesh. cube material)]
               (doto cubemesh (.. -position (set (* x cubesize) (* y cubesize) (* z cubesize))))
@@ -267,8 +273,7 @@
           (animate-spin cube-geom abs rel)
           (doseq [{piece-geom :geom parts :parts} cube-pieces]
             (let [v (Math.sin (/ abs 2000))]
-              (animate-explode-part piece-geom parts  (Math.max 0 (* 150 (+ 1 v ))))
-            ))))
+              (animate-explode-part piece-geom parts  (Math.max 0 (* 150 (+ 1 v ))))))))
       renderer
       scene
       camera)
@@ -281,7 +286,7 @@
             pieces-plane (js/THREE.Object3D.)
             ]
         (doseq [[idx sln] (map-indexed vector solutions)]
-        ;  (println "creating" idx " for solution " sln)
+          (println "creating" idx " for solution " sln)
           (let [{cube-geom :geom
                  pieces    :pieces
                  :as       cube}

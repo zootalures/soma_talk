@@ -43,14 +43,12 @@
   "register an animator by ID - call (start/stop-enimation id "
   [element-id update-animation renderer scene camera]
   (let [last-update (atom (.getTime (js/Date.)))
-          animation-fn (fn []
-                         (let [curtime (.getTime (js/Date.))]
-                           (update-animation @last-update (/ (- curtime @last-update) 1000))
-                           (reset! last-update curtime))
-                         (.render renderer scene camera))]
-    (reset! animators (assoc @animators element-id [false animation-fn] ))
-    (animation-fn)
-    ))
+        animation-fn (fn []
+                       (let [curtime (.getTime (js/Date.))]
+                         (update-animation @last-update (/ (- curtime @last-update) 1000))
+                         (reset! last-update curtime))
+                       (.render renderer scene camera))]
+    (reset! animators (assoc @animators element-id [false animation-fn] ))))
 
 
 (def global-anim-fn (atom nil))
@@ -58,10 +56,13 @@
 (defn main-animator
   "Main animation interation entry point - called when at least one animation is enabled"
   []
-  (doseq [[enabled? anim-fn]
-          (vals @animators)]
-    (when enabled? (anim-fn)))
+  (doseq [[id [enabled? anim-fn]]  @animators]
+    (when enabled?
+      (do
+  ;      (println "anim " id)
+        (anim-fn))))
   (when @global-anim-fn
+ ;   (do (println "next")
     (.requestAnimationFrame js/window @global-anim-fn)))
 
 
@@ -70,9 +71,10 @@
   [element-id]
   (if-let [[_ anim-fn ] (get @animators element-id)]
     (do
-      (println "starting  " element-id)
       (reset! animators (assoc @animators element-id [ true anim-fn]))
+      (println "starting animation " element-id @animators)
       (when-not @global-anim-fn
+        (println "starting anim loop")
         (reset! global-anim-fn main-animator)
         (main-animator)))))
 
@@ -81,9 +83,12 @@
   [element-id]
   (if-let [[_ anim-fn ] (get @animators element-id)]
     (do
+      (println "stopping animation " element-id @animators)
       (reset! animators (assoc @animators element-id [ false anim-fn]))
       (if (not (some (partial first ) (keys @animators)))
-        (reset! global-anim-fn nil)))))
+        (do
+          (println "turning off anim loop")
+          (reset! global-anim-fn nil))))))
 
 (defn stop-all-animations
   "stop all animations "
@@ -119,6 +124,7 @@
         (reduce
           (fn
             [parent [x y z]]
+            (println "creating cube " x y z )
             (let [cube (js/THREE.CubeGeometry. cubesize cubesize cubesize)
                   cubemesh (js/THREE.Mesh. cube material)]
               (doto cubemesh (.. -position (set (* x cubesize) (* y cubesize) (* z cubesize))))
@@ -128,7 +134,6 @@
           (js/THREE.Geometry.)
           parts)
         ]
-    ; (println "creating parts " idx ":" parts " " color)
     (js/THREE.Mesh. geometry material)))
 
 (defn place-piece
@@ -154,7 +159,6 @@
          camera (init-camera scene width height)
          renderer (init-renderer canvas-element)
          pieces (atom [])]
-   ;  (println "showing in " width ":" height)
      (init-lighting scene)
 
    (register-animator canvas-element-id
@@ -202,16 +206,8 @@
 
 
 
-
-(defn move-piece
-  [part [dx dy dz]]
-  (for [[x y z] part]
-    [(+ x dx) (+ y dy) (+ z dz)]))
-;
-;; TODO work out center of piece as, move piece along vector
-;
 (defn center-of-piece
-  "returns a point at the center of a piece's coordinates "
+  "returns  the mean of the pieces coordinates used as center of gravity for explosions "
   [p]
   (let [[tx ty tz] (reduce (fn [[ax ay az] [px py pz]] [(+ ax px) (+ ay py) (+ az pz)]) [0 0 0] p)
         num (count p)]
@@ -221,11 +217,6 @@
   "Moves a piece  away from the origin by a given distance "
   [piece v]
   (vec (map (partial * (+ 1 v)) (center-of-piece piece))))
-;
-;(defn grow-piece
-;  [part d]
-;  (let [[cx cy cz] (center-of-piece p)]
-;    (move-piece part [(* cx d) (* cy d) (* cz d) ])))
 
 (defn create-cube-sln
   "Create a cube returns the geometry "
@@ -256,6 +247,7 @@
         ))))
 
 (defn animate-explode-part
+  "Animator function which displaces a list of parts away from the origin by a given amount "
   [geom parts v]
   (let [[x y z ] (explode-translation parts v)]
     (doto geom (.. -position (set x y z )))
@@ -263,6 +255,7 @@
 
 
 (defn display-sln-from-url
+  "Display a soma cube solution from a source answer set (edn) "
   [canvas-element-id url cols ws-scale]
   (let [canvas-element (.getElementById js/document canvas-element-id)
         width (.-width canvas-element)
@@ -280,8 +273,7 @@
           (animate-spin cube-geom abs rel)
           (doseq [{piece-geom :geom parts :parts} cube-pieces]
             (let [v (Math.sin (/ abs 2000))]
-              (animate-explode-part piece-geom parts  (Math.max 0 (* 150 (+ 1 v ))))
-            ))))
+              (animate-explode-part piece-geom parts  (Math.max 0 (* 150 (+ 1 v ))))))))
       renderer
       scene
       camera)
@@ -294,7 +286,7 @@
             pieces-plane (js/THREE.Object3D.)
             ]
         (doseq [[idx sln] (map-indexed vector solutions)]
-        ;  (println "creating" idx " for solution " sln)
+          (println "creating" idx " for solution " sln)
           (let [{cube-geom :geom
                  pieces    :pieces
                  :as       cube}
