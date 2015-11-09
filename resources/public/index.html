@@ -151,34 +151,30 @@
 
         <section>
              <pre><code class="prolog">
-                 % possible rotations to build octahedral symmetry
-                 rotv(x, 0). rotv(x, 90). rotv(x, 180). rotv(x, 270).
-                 rotv(y, 0). rotv(y, 90). rotv(y, 180).
-                 rotv(z, 0). rotv(z, 90).
+ % possible rotations to build octahedral symmetry
+ rotv(x, 0). rotv(x, 90). rotv(x, 180). rotv(x, 270).
+ rotv(y, 0). rotv(y, 90). rotv(y, 180).
+ rotv(z, 0). rotv(z, 90).
 
-                 % trig functions we need
-                 sin(0,0). sin(90,1). sin(180,0). sin(270,-1).
-                 cos(0,1). cos(90,0). cos(180,-1). cos(270,0).
+ % trig functions we need
+ sin(0,0). sin(90,1). sin(180,0). sin(270,-1).
+ cos(0,1). cos(90,0). cos(180,-1). cos(270,0).
 
-                 % Pick one rotation per axis from possible list
-                 1{ rot(P,A,R) : rotv(A,R) } 1 :- piece(P),axis(A).
+ % Pick one rotation per axis from possible list
+ 1{ rot(P,A,R) : rotv(A,R) } 1 :- piece(P),axis(A).
              </code> </pre>
         </section>
 
         <section>
              <pre><code class="prolog">
-
-                 % Place an element into space based on its rotation and translation
-                 place_rotated_part(P,r(RX,RY,RZ),p(X,Y,Z) :-
-                 part(P,p(IX,IY,IZ)),
-                 rot(P,x,RX),rot(P,y,RY), rot(P,z,RZ),
-                 sin(RX,SRX), sin(RY,SRY), sin(RZ,SRZ),
-                 cos(RX,CRX), cos(RY,CRY), cos(RZ,CRZ),
-                 X = (((((IY * SRX) + (IZ - CRX)) * SRY) + (IX * CRY)) * CRZ) -
-                 (((IY * CRX) - (IZ - SRX)) * SRZ),
-                 Y = (((((IY * SRX) + (IZ - CRX)) * SRY) + (IX * CRY)) * SRZ) +
-                 (((IY * CRX) - (IZ - SRX)) * CRZ),
-                 Z = (((IY * SRX) + (IZ - CRX)) * CRY) - (IX * SRY)) .
+rotated_part(r(RX,RY,RZ),p(IX,IY,IZ),p(RX_X,RX_Y,RX_Z)) :-
+    rotv(x,RX),rotv(y,RY),  rotv(z,RZ),
+    pos(IX), pos(IY), pos(IZ),
+    sin(RX,SRX), sin(RY,SRY), sin(RZ,SRZ),
+    cos(RX,CRX), cos(RY,CRY), cos(RZ,CRZ),
+    RX_X = ((IZ * SRY) + (((IX * CRZ) - (IY * SRZ)) * CRY)),
+    RX_Y = ((((IX * SRZ) + (IY * CRZ)) * CRX) - (((IZ  * CRY) - (((IX * CRZ) - (IY * SRZ)) * SRY)) * SRX)),
+    RX_Z = ((((IX * SRZ) + (IY * CRZ)) * SRX) + (((IZ  * CRY) - (((IX * CRZ) - (IY * SRZ)) * SRY)) * CRX)).
              </code> </pre>
         </section>
 
